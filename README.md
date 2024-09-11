@@ -17,7 +17,7 @@
 
 ## Loadstring
 
- `loadstring(game:HttpGet("https://raw.githubusercontent.com/gaps510dev/disrupt/main/source.lua"))`
+ `loadstring(game:HttpGet("https://raw.githubusercontent.com/gaps510dev/disrupt/main/source.lua"))()`
 
 ---
 ## License
