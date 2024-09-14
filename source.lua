@@ -3,8 +3,6 @@ local visuals_enabled = false
 local show_boxes_enabled = false
 local show_tracers_enabled = false
 local show_names_enabled = false
-local show_skeleton_enabled = false
-local show_view_line_enabled = false
 local aimbot_enabled = false
 local aimbot_fov_size = 50
 local aimbot_aim_part = "Head"
@@ -12,12 +10,6 @@ local aimbot_smoothness = 0
 local show_fov = false
 local aimbot_right_click = false
 local aimbot_smoothness_enabled = false
-local aimbot_prediction_enabled = false
-local aimbot_prediction_strength_x = 0
-local aimbot_prediction_strength_y = 0
-local aimbot_sticky_aim_enabled = false
-local user_input_service = game:GetService("UserInputService")
-local locked_target = nil
 local players_service = game:GetService("Players")
 local run_service = game:GetService("RunService")
 local visual_elements = {}
@@ -48,37 +40,13 @@ function init_visuals(player)
     name_visual.Outline = true
     name_visual.Transparency = 1
 
-    local skeleton_lines = {}
-    for i = 1, 6 do
-        local line = Drawing.new("Line")
-        line.Color = Color3.fromRGB(255, 255, 255)
-        line.Thickness = 2.5 
-        line.Transparency = 1
-        table.insert(skeleton_lines, line)
-    end
-
-    local view_line = Drawing.new("Line")
-    view_line.Color = Color3.fromRGB(255, 255, 255)
-    view_line.Thickness = 2.5
-    view_line.Transparency = 1
-
-    visual_elements[player] = {
-        box = box_visual,
-        tracer = tracer_visual,
-        name = name_visual,
-        skeleton = skeleton_lines,
-        view_line = view_line
-    }
+    visual_elements[player] = {box = box_visual, tracer = tracer_visual, name = name_visual}
 
     local function update_visuals()
         if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
             box_visual.Visible = false
             tracer_visual.Visible = false
             name_visual.Visible = false
-            for _, line in pairs(skeleton_lines) do
-                line.Visible = false
-            end
-            view_line.Visible = false
             return
         end
 
@@ -110,88 +78,10 @@ function init_visuals(player)
             else
                 name_visual.Visible = false
             end
-
-            if show_view_line_enabled and player.Character:FindFirstChild("Head") then
-                local head = player.Character:FindFirstChild("Head")
-                local head_pos = workspace.CurrentCamera:WorldToViewportPoint(head.Position)
-                local forward_vector = player.Character.HumanoidRootPart.CFrame.LookVector * 2
-                local view_point = head.Position + forward_vector
-                local view_pos = workspace.CurrentCamera:WorldToViewportPoint(view_point)
-    
-                view_line.From = Vector2.new(head_pos.X, head_pos.Y)
-                view_line.To = Vector2.new(view_pos.X, view_pos.Y)
-                view_line.Visible = true
-            else
-                view_line.Visible = false
-            end
-
-            if show_skeleton_enabled and player.Character then
-                local parts = {
-                    head = player.Character:FindFirstChild("Head"),
-                    left_arm = player.Character:FindFirstChild("LeftUpperArm"),
-                    right_arm = player.Character:FindFirstChild("RightUpperArm"),
-                    left_leg = player.Character:FindFirstChild("LeftUpperLeg"),
-                    right_leg = player.Character:FindFirstChild("RightUpperLeg"),
-                    torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso")
-                }
-
-                if parts.head and parts.torso then
-                    local head_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.head.Position)
-                    local torso_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.torso.Position)
-
-                    skeleton_lines[1].From = Vector2.new(head_pos.X, head_pos.Y)
-                    skeleton_lines[1].To = Vector2.new(torso_pos.X, torso_pos.Y)
-                    skeleton_lines[1].Visible = true
-
-                    if parts.left_arm then
-                        local left_arm_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.left_arm.Position)
-                        skeleton_lines[2].From = Vector2.new(torso_pos.X, torso_pos.Y)
-                        skeleton_lines[2].To = Vector2.new(left_arm_pos.X, left_arm_pos.Y)
-                        skeleton_lines[2].Visible = true
-                    else
-                        skeleton_lines[2].Visible = false
-                    end
-
-                    if parts.right_arm then
-                        local right_arm_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.right_arm.Position)
-                        skeleton_lines[3].From = Vector2.new(torso_pos.X, torso_pos.Y)
-                        skeleton_lines[3].To = Vector2.new(right_arm_pos.X, right_arm_pos.Y)
-                        skeleton_lines[3].Visible = true
-                    else
-                        skeleton_lines[3].Visible = false
-                    end
-
-                    if parts.left_leg then
-                        local left_leg_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.left_leg.Position)
-                        skeleton_lines[4].From = Vector2.new(torso_pos.X, torso_pos.Y)
-                        skeleton_lines[4].To = Vector2.new(left_leg_pos.X, left_leg_pos.Y)
-                        skeleton_lines[4].Visible = true
-                    else
-                        skeleton_lines[4].Visible = false
-                    end
-
-                    if parts.right_leg then
-                        local right_leg_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.right_leg.Position)
-                        skeleton_lines[5].From = Vector2.new(torso_pos.X, torso_pos.Y)
-                        skeleton_lines[5].To = Vector2.new(right_leg_pos.X, right_leg_pos.Y)
-                        skeleton_lines[5].Visible = true
-                    else
-                        skeleton_lines[5].Visible = false
-                    end
-                end
-            else
-                for _, line in pairs(skeleton_lines) do
-                    line.Visible = false
-                end
-            end
         else
             box_visual.Visible = false
             tracer_visual.Visible = false
             name_visual.Visible = false
-            for _, line in pairs(skeleton_lines) do
-                line.Visible = false
-            end
-            view_line.Visible = false
         end
     end
 
@@ -265,44 +155,14 @@ function toggle_smoothness(state)
 end
 
 -- aimbot shit
+local UserInputService = game:GetService("UserInputService")
+
 function aimbot()
     if not aimbot_enabled then return end
-    if not user_input_service:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-        locked_target = nil
-        return
-    end
+    if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then return end
 
     local camera = workspace.CurrentCamera
     local mouse = game.Players.LocalPlayer:GetMouse()
-
-    if locked_target and aimbot_sticky_aim_enabled then
-        if locked_target.Character and locked_target.Character:FindFirstChild(aimbot_aim_part) then
-            local part = locked_target.Character[aimbot_aim_part]
-            local predicted_position = part.Position
-            if aimbot_prediction_enabled then
-                local velocity = locked_target.Character.HumanoidRootPart.Velocity
-                predicted_position = part.Position + Vector3.new(
-                    velocity.X * aimbot_prediction_strength_x * 0.1,
-                    velocity.Y * aimbot_prediction_strength_y * 0.1,
-                    0
-                )
-            end
-            local screen_pos = camera:WorldToViewportPoint(predicted_position)
-            local target = Vector2.new(screen_pos.X, screen_pos.Y)
-            local screen_center = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
-            local move = target - screen_center
-
-            if aimbot_smoothness_enabled then
-                local move_step = move / (aimbot_smoothness + 1)
-                mousemoverel(move_step.X, move_step.Y)
-            else
-                mousemoverel(move.X, move.Y)
-            end
-            return
-        else
-            locked_target = nil
-        end
-    end
 
     local closest_player = nil
     local closest_distance = aimbot_fov_size
@@ -310,16 +170,7 @@ function aimbot()
     for _, player in pairs(players_service:GetPlayers()) do
         if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild(aimbot_aim_part) then
             local part = player.Character[aimbot_aim_part]
-            local predicted_position = part.Position
-            if aimbot_prediction_enabled then
-                local velocity = player.Character.HumanoidRootPart.Velocity
-                predicted_position = part.Position + Vector3.new(
-                    velocity.X * aimbot_prediction_strength_x * 0.1,
-                    velocity.Y * aimbot_prediction_strength_y * 0.1,
-                    0
-                )
-            end
-            local screen_pos, on_screen = camera:WorldToViewportPoint(predicted_position)
+            local screen_pos, on_screen = camera:WorldToViewportPoint(part.Position)
             if on_screen then
                 local distance = (Vector2.new(screen_pos.X, screen_pos.Y) - Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)).magnitude
                 if distance < closest_distance then
@@ -331,19 +182,10 @@ function aimbot()
     end
 
     if closest_player then
-        locked_target = closest_player
         local part = closest_player.Character[aimbot_aim_part]
-        local predicted_position = part.Position
-        if aimbot_prediction_enabled then
-            local velocity = closest_player.Character.HumanoidRootPart.Velocity
-            predicted_position = part.Position + Vector3.new(
-                velocity.X * aimbot_prediction_strength_x * 0.1,
-                velocity.Y * aimbot_prediction_strength_y * 0.1,
-                0
-            )
-        end
-        local screen_pos = camera:WorldToViewportPoint(predicted_position)
+        local screen_pos = camera:WorldToViewportPoint(part.Position)
         local target = Vector2.new(screen_pos.X, screen_pos.Y)
+
         local screen_center = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
         local move = target - screen_center
 
@@ -356,7 +198,6 @@ function aimbot()
     end
 end
 
-
 run_service.RenderStepped:Connect(aimbot)
 
 local fov_circle = Drawing.new("Circle")
@@ -368,7 +209,7 @@ fov_circle.Filled = false
 function update_fov_circle()
     if show_fov then
         local camera = workspace.CurrentCamera
-        local mouse_pos = user_input_service:GetMouseLocation()
+        local mouse_pos = UserInputService:GetMouseLocation()
         fov_circle.Radius = aimbot_fov_size
         fov_circle.Position = Vector2.new(mouse_pos.X, mouse_pos.Y)
         fov_circle.Visible = true
@@ -385,7 +226,7 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 -- creating window & tabs
 local Window = Fluent:CreateWindow({
     Title = "Disrupt",
-    SubTitle = "   v0.5",
+    SubTitle = "   v0.2",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true, -- possible dtc, change to false if script gets dtc
@@ -399,14 +240,6 @@ local Tabs = {
 }
 
 do
-    Fluent:Notify({
-        Title = "Discord Invite Copied",
-        Content = "Discord invite has been copied.",
-        Duration = 3
-    })
-
-    setclipboard("https://discord.gg/YjSAy9Fu5P")
-
     -- aimbot tab
     local enable_aimbot_cb = Tabs.aimbot_tab:AddToggle("EnableAimbot", { Title = "Enable", Default = false })
     enable_aimbot_cb:OnChanged(function(value)
@@ -422,17 +255,7 @@ do
     smoothness_cb:OnChanged(function(value)
         toggle_smoothness(value)
     end)
-    
-    local enable_prediction_cb = Tabs.aimbot_tab:AddToggle("EnablePrediction", { Title = "Enable Prediction", Default = false })
-    enable_prediction_cb:OnChanged(function(value)
-        aimbot_prediction_enabled = value
-    end)
 
-    local sticky_aim_cb = Tabs.aimbot_tab:AddToggle("StickyAimCheckbox", { Title = "Sticky Aim", Default = false })
-    sticky_aim_cb:OnChanged(function(value)
-        aimbot_sticky_aim_enabled = value
-    end)
-    
     local aim_at_dropdown = Tabs.aimbot_tab:AddDropdown("AimPartDropDown", {
         Title = "Aim At",
         Values = {"Head", "HumanoidRootPart"},
@@ -440,28 +263,6 @@ do
         Default = 1,
         Callback = function(value)
             set_aimbot_target(value)
-        end
-    })
-
-    local prediction_strength_x_slider = Tabs.aimbot_tab:AddSlider("PredictionStrengthXSlider", {
-        Title = "Prediction Strength X",
-        Default = 0,
-        Min = 0,
-        Max = 1,
-        Rounding = 2,
-        Callback = function(value)
-            aimbot_prediction_strength_x = value
-        end
-    })
-    
-    local prediction_strength_y_slider = Tabs.aimbot_tab:AddSlider("PredictionStrengthYSlider", {
-        Title = "Prediction Strength Y",
-        Default = 0,
-        Min = 0,
-        Max = 1,
-        Rounding = 2,
-        Callback = function(value)
-            aimbot_prediction_strength_y = value
         end
     })
 
@@ -507,17 +308,6 @@ do
     enable_names_cb:OnChanged(function(value)
         show_names_enabled = value
     end)
-
-    local skeleton_esp_cb = Tabs.visuals_tab:AddToggle("SkeletonESP", { Title = "Skeleton", Default = false })
-    skeleton_esp_cb:OnChanged(function(value)
-        show_skeleton_enabled = value
-    end)    
-
-    local view_line_esp_cb = Tabs.visuals_tab:AddToggle("ViewLineESP", { Title = "View Line", Default = false })
-    view_line_esp_cb:OnChanged(function(value)
-        show_view_line_enabled = value
-    end)
-
 end
 
 Window:SelectTab(1)
