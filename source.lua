@@ -733,8 +733,8 @@ if executor_used == "Synapse Z" then
 
                     -- matching name from input
                     for _, player in ipairs(game.Players:GetPlayers()) do
-                        local player_name = player.Name and player.Name:lower() or ""
-                        local player_display_name = player.DisplayName and player.DisplayName:lower() or ""
+                        local player_name = player.Name and player.Name or ""
+                        local player_display_name = player.DisplayName and player.DisplayName or ""
 
                         if
                             player_name:find(input_value_lower, 1, true) or
