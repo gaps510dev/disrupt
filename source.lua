@@ -53,6 +53,8 @@ if executor_used == "Synapse Z" then
     local tp_behind_offset = 0
     local tp_behind_height = 6
     local teleporting = false
+    local speed_multiplier = 0
+    local speed_modifier_enabled = false
 
     function init_visuals(player)
         if not visuals_enabled then
@@ -490,21 +492,19 @@ if executor_used == "Synapse Z" then
         Clip = false
         local function Nocl()
             if Clip == false and game.Players.LocalPlayer.Character ~= nil then
-                for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                    if v:IsA("BasePart") and v.CanCollide and v.Name ~= floatName then
+                for _,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                    if v:IsA('BasePart') and v.CanCollide and v.Name ~= floatName then
                         v.CanCollide = false
                     end
                 end
             end
             wait(0.21) -- basic optimization
         end
-        Noclip = game:GetService("RunService").Stepped:Connect(Nocl)
+        Noclip = game:GetService('RunService').Stepped:Connect(Nocl)
     end
     
     function clip()
-        if Noclip then
-            Noclip:Disconnect()
-        end
+        if Noclip then Noclip:Disconnect() end
         Clip = true
     end
 
@@ -517,7 +517,7 @@ if executor_used == "Synapse Z" then
         Fluent:CreateWindow(
         {
             Title = "Disrupt",
-            SubTitle = "   v0.6",
+            SubTitle = "   v0.7",
             TabWidth = 160,
             Size = UDim2.fromOffset(580, 460),
             Acrylic = true, -- possible dtc, change to false if script gets dtc
@@ -787,10 +787,23 @@ if executor_used == "Synapse Z" then
         )
 
         -- next update (you would only know about this if you read the source :3):
-        --[[         local enable_fly_cb = Tabs.player_tab:AddToggle("EnableFly", {Title = "Fly", Default = false})
-        enable_noclip_cb:OnChanged(
-            function(value)
+        -- local enable_fly_cb = Tabs.player_tab:AddToggle("EnableFly", {Title = "Fly", Default = false})
+        -- enable_noclip_cb:OnChanged(
+        --     function(value)
                 
+        --     end
+        -- )
+
+        local enable_speed_cb = Tabs.player_tab:AddToggle("EnableFly", {Title = "Enable Speed", Default = false})
+        enable_speed_cb:OnChanged(
+            function(value)
+                speed_modifier_enabled = value
+                if speed_modifier_enabled then
+                    repeat
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + game.Players.LocalPlayer.Character.Humanoid.MoveDirection * speed_multiplier
+                        game:GetService("RunService").Stepped:wait()
+                    until not speed_modifier_enabled
+                end
             end
         )
 
@@ -798,15 +811,16 @@ if executor_used == "Synapse Z" then
             Tabs.player_tab:AddSlider(
             "WalkspeedSlider",
             {
-                Title = "Walkspeed Multiplier",
+                Title = "Walkspeed",
                 Default = 0,
                 Min = 0,
-                Max = 10,
-                Rounding = 0,
+                Max = 0.7,
+                Rounding = 1,
                 Callback = function(value)
+                    speed_multiplier = value
                 end
             }
-        ) ]]
+        )
     end
 
     Window:SelectTab(1)
