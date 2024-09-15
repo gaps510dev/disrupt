@@ -462,18 +462,22 @@ if executor_used == "Synapse Z" then
     local function loop_behind(target_player)
         teleporting = true
         local player = game.Players.LocalPlayer
-        local target_character = target_player.Character
-        local target_humanoid_root_part = target_character and target_character:FindFirstChild("HumanoidRootPart")
-        local player_character = player.Character
-        local player_humanoid_root_part = player_character and player_character:FindFirstChild("HumanoidRootPart")
-
-        while player_humanoid_root_part and target_humanoid_root_part and teleporting do
-            local target_cframe = target_humanoid_root_part.CFrame
-            local target_look_vector = target_cframe.LookVector
-            local target_position = target_cframe.Position
-            local new_position =
-                target_position - (target_look_vector * tp_behind_offset) + Vector3.new(0, tp_behind_height, 0)
-            player_humanoid_root_part.CFrame = CFrame.new(new_position, new_position + target_look_vector)
+    
+        while teleporting do
+            local target_character = target_player.Character
+            local target_humanoid_root_part = target_character and target_character:FindFirstChild("HumanoidRootPart")
+            local player_character = player.Character
+            local player_humanoid_root_part = player_character and player_character:FindFirstChild("HumanoidRootPart")
+    
+            if player_humanoid_root_part and target_humanoid_root_part then
+                local target_cframe = target_humanoid_root_part.CFrame
+                local target_look_vector = target_cframe.LookVector
+                local target_position = target_cframe.Position
+                local new_position =
+                    target_position - (target_look_vector * tp_behind_offset) + Vector3.new(0, tp_behind_height, 0)
+                player_humanoid_root_part.CFrame = CFrame.new(new_position, new_position + target_look_vector)
+            end
+    
             task.wait()
         end
     end
