@@ -50,7 +50,7 @@ if executor_used == "Synapse Z" then
     local players_service = game:GetService("Players")
     local run_service = game:GetService("RunService")
     local visual_elements = {}
-    local tp_behind_offset = 3
+    local tp_behind_offset = 0
     local tp_behind_height = 6
     local teleporting = false
 
@@ -485,7 +485,7 @@ if executor_used == "Synapse Z" then
     -- noclip code credit to https://scriptblox.com/script/Universal-Script-Noclip-5473
     local Noclip = nil
     local Clip = nil
-
+    
     function noclip()
         Clip = false
         local function Nocl()
@@ -500,7 +500,7 @@ if executor_used == "Synapse Z" then
         end
         Noclip = game:GetService("RunService").Stepped:Connect(Nocl)
     end
-
+    
     function clip()
         if Noclip then
             Noclip:Disconnect()
@@ -778,7 +778,11 @@ if executor_used == "Synapse Z" then
         local enable_noclip_cb = Tabs.player_tab:AddToggle("EnableNoclip", {Title = "Noclip", Default = false})
         enable_noclip_cb:OnChanged(
             function(value)
-                noclip()
+                if value then
+                    noclip()
+                else
+                    clip()
+                end
             end
         )
 
