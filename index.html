@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disrupt</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap">
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding-bottom: 200px;
+        }
+
+        nav {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            border: 2px solid white;
+            border-radius: 14px;
+            padding: 8px 15px;
+            width: 100px;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: white;
+            color: black;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            position: fixed;
+            top: 8px;
+            left: 16px;
+        }
+
+        .center-text {
+            text-align: center;
+            margin-top: 150px;
+        }
+
+        .center-text h1 {
+            font-size: 50px;
+            margin: 0;
+        }
+
+        .center-text p {
+            font-size: 18px;
+            margin: 1%;
+        }
+
+        .button-container {
+            margin-top: 25px;
+        }
+
+        .github-button,
+        .download-button {
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            background-color: #333;
+            border: 2px solid white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            font-size: 18px;
+            width: 150px;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+            margin: 0 5px;
+        }
+
+        .github-button:hover,
+        .download-button:hover {
+            background-color: white;
+            color: black;
+        }
+
+        .features-header {
+            font-weight: bold;
+            position: relative;
+            top: 450px;
+            font-size: 36px;
+            text-align: center;
+        }
+
+        .features-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 350px;
+            margin: 500px auto;
+            max-width: 1600px;
+            padding: 0 30px;
+        }
+
+        .features-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 30px;
+        }
+
+        .feature-box {
+            text-align: center;
+            border: 2px solid white;
+            border-radius: 24px;
+            padding: 50px;
+            width: 300px;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 18px;
+        }
+
+        .feature-box h3 {
+            margin: 0 0 20px;
+            font-size: 28px;
+        }
+
+        .feature-box p {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .feature-box:hover {
+            background-color: white;
+            color: black;
+        }
+
+        .tilt-image-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-left: 10px;
+            margin-top: 30px;
+        }
+
+        .tilt-image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .copyright {
+            position: fixed;
+            bottom: 10px;
+            left: 16px;
+            font-size: 12px;
+            color: grey;
+        }
+
+        .spacer {
+            height: 100px;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                top: 5px;
+                right: 10px;
+            }
+
+            nav a {
+                font-size: 16px;
+                padding: 6px 10px;
+                width: 120px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .center-text h1 {
+                font-size: 40px;
+            }
+
+            .center-text p {
+                font-size: 16px;
+            }
+
+            .button-container {
+                margin-top: 20px;
+            }
+
+            .github-button,
+            .download-button {
+                width: 140px;
+                padding: 8px 15px;
+            }
+
+            .features-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .features-section {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-box {
+                width: 100%;
+                margin-bottom: 20px;
+                padding: 30px;
+            }
+
+            .tilt-image {
+                width: 100%;
+                max-width: 300px;
+                margin-top: 20px;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@latest/dist/vanilla-tilt.min.js"></script>
+</head>
+
+<body>
+    <nav>
+        <a href="https://discord.gg/synz">Discord</a>
+        <a href="https://github.com/gaps510dev/disrupt">Download</a>
+    </nav>
+    <div class="logo">disrupt</div>
+
+    <div class="center-text">
+        <h1>Disrupt</h1>
+        <p>#1 Open Source & Free RIVALS Script</p>
+        <div class="button-container">
+            <a href="https://github.com/gaps510dev/disrupt" class="github-button" target="_blank">View On Github</a>
+            <a href="https://github.com/gaps510dev/disrupt" class="download-button" target="_blank">Download</a>
+        </div>
+    </div>
+
+    <div class="tilt-image-container">
+        <img src="https://media.discordapp.net/attachments/1274892137992945818/1285341558073462936/image-Photoroom.png?ex=66e9eb1b&is=66e8999b&hm=de07e268465bcf3993eabe25b438c86c9925193aac48f0f3a39a9b744f88c617&=&format=webp&quality=lossless" alt="Placeholder Image" class="tilt-image" data-tilt>
+    </div>
+
+    <div class="features-header">Features You Can Expect From Us</div>
+
+    <div class="features-container">
+        <div class="features-section">
+            <div class="feature-box">
+                <h3>Features</h3>
+                <p>With features such as Player Mods, Aimbot, and ESP you will never get bored.</p>
+            </div>
+            <div class="feature-box">
+                <h3>Stability</h3>
+                <p>We can ensure that you will have a smooth experience with little bugs.</p>
+            </div>
+            <div class="feature-box">
+                <h3>Safety</h3>
+                <p>We can assure you that our Aimbot and ESP will never get detected.</p>
+            </div>
+            <div class="feature-box">
+                <h3>Privacy</h3>
+                <p>Your privacy is our #1 concern, which is why we have no loggers unlike most.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="spacer">gg</div>
+
+    <div class="copyright">
+        &copy; 2024 Disrupt. All rights reserved.
+    </div>
+
+    <script>
+        VanillaTilt.init(document.querySelectorAll('.tilt-image'), {
+            max: 15,
+            speed: 400, 
+            glare: true,
+            'max-glare': 0.5
+        });
+    </script>
+</body>
+
+</html>
