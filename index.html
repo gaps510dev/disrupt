@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disrupt</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap">
     <style>
         body {
             margin: 0;
@@ -19,6 +17,7 @@
             overflow-x: hidden;
             overflow-y: auto;
             padding-bottom: 200px;
+            user-select: none;
         }
 
         nav {
@@ -156,6 +155,24 @@
             height: auto;
         }
 
+        .requirements-container {
+            margin-top: -60px;
+            text-align: center;
+        }
+
+        .requirements-header {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: -40px;
+        }
+
+        .requirements-text {
+            font-size: 20px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin-left: -70px;
+        }
+
         .copyright {
             position: fixed;
             bottom: 10px;
@@ -165,7 +182,8 @@
         }
 
         .spacer {
-            height: 100px;
+            height: 800px;
+            margin-top: 500px;
         }
 
         @media (max-width: 768px) {
@@ -232,6 +250,7 @@
         <a href="https://discord.gg/6zyrd8yXtp">Discord</a>
         <a href="https://github.com/gaps510dev/disrupt">Download</a>
     </nav>
+    
     <div class="logo">disrupt</div>
 
     <div class="center-text">
@@ -244,7 +263,7 @@
     </div>
 
     <div class="tilt-image-container">
-        <img src="https://github.com/gaps510dev/disrupt/blob/main/image-Photoroom.png?raw=true" alt="Placeholder Image" class="tilt-image" data-tilt>
+        <img src="https://github.com/gaps510dev/disrupt/blob/main/image-Photoroom.png?raw=true" alt="Disrupt GUI" class="tilt-image" data-tilt>
     </div>
 
     <div class="features-header">What You Can Expect From Us</div>
@@ -270,6 +289,15 @@
         </div>
     </div>
 
+    <div class="requirements-container">
+        <h2 class="requirements-header">Requirements</h2>
+        <p class="requirements-text">
+            An executor with <code>drawing.new()</code> and <code>mousemoverel()</code> is required.
+            Please do not open an issue if these arent supported.
+            Use Synapse Z for the best experience.
+        </p>
+    </div>
+
     <div class="spacer">gg</div>
 
     <div class="copyright">
@@ -285,5 +313,4 @@
         });
     </script>
 </body>
-
 </html>
