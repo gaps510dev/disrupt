@@ -37,6 +37,7 @@ if executor_used == "Synapse Z" then
     local aimbot_enabled = false
     local aimbot_fov_size = 50
     local aimbot_aim_part = "Head"
+    local aimbot_keybind = Enum.UserInputType.MouseButton2
     local aimbot_smoothness = 0
     local show_fov = false
     local aimbot_right_click = false
@@ -119,15 +120,24 @@ if executor_used == "Synapse Z" then
                 view_line.Visible = false
                 return
             end
-
+        
+            if not visuals_enabled then
+                box_visual.Visible = false
+                tracer_visual.Visible = false
+                name_visual.Visible = false
+                for _, line in pairs(skeleton_lines) do
+                    line.Visible = false
+                end
+                view_line.Visible = false
+                return
+            end
+        
             local hrp_position, on_screen = workspace.CurrentCamera:WorldToViewportPoint(humanoid_root_part.Position)
             if on_screen then
-                local top =
-                    workspace.CurrentCamera:WorldToViewportPoint(humanoid_root_part.Position + Vector3.new(0, 3, 0))
-                local bottom =
-                    workspace.CurrentCamera:WorldToViewportPoint(humanoid_root_part.Position - Vector3.new(0, 3, 0))
+                local top = workspace.CurrentCamera:WorldToViewportPoint(humanoid_root_part.Position + Vector3.new(0, 3, 0))
+                local bottom = workspace.CurrentCamera:WorldToViewportPoint(humanoid_root_part.Position - Vector3.new(0, 3, 0))
                 local size = Vector2.new(math.abs(top.X - bottom.X) * 1.5, math.abs(top.Y - bottom.Y) * 1.5)
-
+        
                 if show_boxes_enabled then
                     box_visual.Size = size
                     box_visual.Position = Vector2.new(hrp_position.X - size.X / 2, hrp_position.Y - size.Y / 2)
@@ -135,37 +145,36 @@ if executor_used == "Synapse Z" then
                 else
                     box_visual.Visible = false
                 end
-
+        
                 if show_tracers_enabled then
-                    tracer_visual.From =
-                        Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y)
+                    tracer_visual.From = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y)
                     tracer_visual.To = Vector2.new(hrp_position.X, hrp_position.Y)
                     tracer_visual.Visible = true
                 else
                     tracer_visual.Visible = false
                 end
-
+        
                 if show_names_enabled then
                     name_visual.Position = Vector2.new(hrp_position.X, hrp_position.Y - size.Y / 2 - 20)
                     name_visual.Visible = true
                 else
                     name_visual.Visible = false
                 end
-
+        
                 if show_view_line_enabled and player.Character:FindFirstChild("Head") then
                     local head = player.Character:FindFirstChild("Head")
                     local head_pos = workspace.CurrentCamera:WorldToViewportPoint(head.Position)
                     local forward_vector = player.Character.HumanoidRootPart.CFrame.LookVector * 2
                     local view_point = head.Position + forward_vector
                     local view_pos = workspace.CurrentCamera:WorldToViewportPoint(view_point)
-
+        
                     view_line.From = Vector2.new(head_pos.X, head_pos.Y)
                     view_line.To = Vector2.new(view_pos.X, view_pos.Y)
                     view_line.Visible = true
                 else
                     view_line.Visible = false
                 end
-
+        
                 if show_skeleton_enabled and player.Character then
                     local parts = {
                         head = player.Character:FindFirstChild("Head"),
@@ -173,18 +182,17 @@ if executor_used == "Synapse Z" then
                         right_arm = player.Character:FindFirstChild("RightUpperArm"),
                         left_leg = player.Character:FindFirstChild("LeftUpperLeg"),
                         right_leg = player.Character:FindFirstChild("RightUpperLeg"),
-                        torso = player.Character:FindFirstChild("Torso") or
-                            player.Character:FindFirstChild("UpperTorso")
+                        torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso")
                     }
-
+        
                     if parts.head and parts.torso then
                         local head_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.head.Position)
                         local torso_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.torso.Position)
-
+        
                         skeleton_lines[1].From = Vector2.new(head_pos.X, head_pos.Y)
                         skeleton_lines[1].To = Vector2.new(torso_pos.X, torso_pos.Y)
                         skeleton_lines[1].Visible = true
-
+        
                         if parts.left_arm then
                             local left_arm_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.left_arm.Position)
                             skeleton_lines[2].From = Vector2.new(torso_pos.X, torso_pos.Y)
@@ -193,7 +201,7 @@ if executor_used == "Synapse Z" then
                         else
                             skeleton_lines[2].Visible = false
                         end
-
+        
                         if parts.right_arm then
                             local right_arm_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.right_arm.Position)
                             skeleton_lines[3].From = Vector2.new(torso_pos.X, torso_pos.Y)
@@ -202,7 +210,7 @@ if executor_used == "Synapse Z" then
                         else
                             skeleton_lines[3].Visible = false
                         end
-
+        
                         if parts.left_leg then
                             local left_leg_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.left_leg.Position)
                             skeleton_lines[4].From = Vector2.new(torso_pos.X, torso_pos.Y)
@@ -211,7 +219,7 @@ if executor_used == "Synapse Z" then
                         else
                             skeleton_lines[4].Visible = false
                         end
-
+        
                         if parts.right_leg then
                             local right_leg_pos = workspace.CurrentCamera:WorldToViewportPoint(parts.right_leg.Position)
                             skeleton_lines[5].From = Vector2.new(torso_pos.X, torso_pos.Y)
@@ -236,6 +244,7 @@ if executor_used == "Synapse Z" then
                 view_line.Visible = false
             end
         end
+        
 
         run_service.RenderStepped:Connect(update_visuals)
     end
@@ -291,10 +300,20 @@ if executor_used == "Synapse Z" then
         if not aimbot_enabled then
             return
         end
-        if not user_input_service:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-            locked_target = nil
-            return
+
+        -- checking for keycode or a mousebutton 
+        if aimbot_keybind == Enum.UserInputType.MouseButton2 then
+            if not user_input_service:IsMouseButtonPressed(aimbot_keybind) then
+                locked_target = nil
+                return
+            end
+        else
+            if not user_input_service:IsKeyDown(aimbot_keybind) then
+                locked_target = nil
+                return
+            end
         end
+
 
         local camera = workspace.CurrentCamera
         local mouse = game.Players.LocalPlayer:GetMouse()
@@ -426,6 +445,7 @@ if executor_used == "Synapse Z" then
             aimbot_aim_part = aimbot_aim_part,
             aimbot_smoothness = aimbot_smoothness,
             show_fov = show_fov,
+            aimbot_keybind = aimbot_keybind,
             aimbot_smoothness_enabled = aimbot_smoothness_enabled,
             aimbot_prediction_enabled = aimbot_prediction_enabled,
             aimbot_prediction_strength_x = aimbot_prediction_strength_x,
@@ -451,6 +471,7 @@ if executor_used == "Synapse Z" then
             aimbot_aim_part = config.aimbot_aim_part
             aimbot_smoothness = config.aimbot_smoothness
             show_fov = config.show_fov
+            aimbot_keybind = config.aimbot_keybind
             aimbot_smoothness_enabled = config.aimbot_smoothness_enabled
             aimbot_prediction_enabled = config.aimbot_prediction_enabled
             aimbot_prediction_strength_x = config.aimbot_prediction_strength_x
@@ -517,7 +538,7 @@ if executor_used == "Synapse Z" then
         Fluent:CreateWindow(
         {
             Title = "Disrupt",
-            SubTitle = "   v0.7",
+            SubTitle = "   v0.8",
             TabWidth = 160,
             Size = UDim2.fromOffset(580, 460),
             Acrylic = true, -- possible dtc, change to false if script gets dtc
@@ -572,6 +593,21 @@ if executor_used == "Synapse Z" then
             end
         )
 
+        local aimbot_kb = Tabs.aimbot_tab:AddKeybind("Keybind", {
+            Title = "Keybind",
+            Mode = "Toggle",
+            Default = "MouseButton2",
+        
+            ChangedCallback = function(New)
+                -- kind of a shitty way to do it but this library is kinda terrible
+                if New == Enum.KeyCode.Unknown then
+                    aimbot_keybind = Enum.UserInputType.MouseButton2
+                else
+                    aimbot_keybind = New
+                end
+            end
+        })
+
         local aim_at_dropdown =
             Tabs.aimbot_tab:AddDropdown(
             "AimPartDropDown",
@@ -585,7 +621,7 @@ if executor_used == "Synapse Z" then
                 end
             }
         )
-
+    
         local fov_size_slider =
             Tabs.aimbot_tab:AddSlider(
             "FovSizeSlider",
@@ -694,7 +730,7 @@ if executor_used == "Synapse Z" then
             Tabs.config_tab:AddInput(
             "ConfigFileInput",
             {
-                Title = "Config File Path",
+                Title = "Config Path",
                 Default = "config.json",
                 Numeric = false,
                 Finished = false,
@@ -786,14 +822,6 @@ if executor_used == "Synapse Z" then
             end
         )
 
-        -- next update (you would only know about this if you read the source :3):
-        -- local enable_fly_cb = Tabs.player_tab:AddToggle("EnableFly", {Title = "Fly", Default = false})
-        -- enable_noclip_cb:OnChanged(
-        --     function(value)
-                
-        --     end
-        -- )
-
         local enable_speed_cb = Tabs.player_tab:AddToggle("EnableFly", {Title = "Enable Speed", Default = false})
         enable_speed_cb:OnChanged(
             function(value)
@@ -824,8 +852,4 @@ if executor_used == "Synapse Z" then
     end
 
     Window:SelectTab(1)
-else
-    if executor_used ~= "Synapse Z" then
-        print("Only Synapse Z is supported, buy today at discord.gg/synz")
-    end
 end
