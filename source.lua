@@ -316,7 +316,7 @@ if executor_used == "Synapse Z" then
 
 
         local camera = workspace.CurrentCamera
-        local mouse = game.Players.LocalPlayer:GetMouse()
+        local mouse = players_service.LocalPlayer:GetMouse()
 
         if locked_target and aimbot_sticky_aim_enabled then
             if locked_target.Character and locked_target.Character:FindFirstChild(aimbot_aim_part) then
@@ -354,7 +354,7 @@ if executor_used == "Synapse Z" then
 
         for _, player in pairs(players_service:GetPlayers()) do
             if
-                player ~= game.Players.LocalPlayer and player.Character and
+                player ~= players_service.LocalPlayer and player.Character and
                     player.Character:FindFirstChild(aimbot_aim_part)
              then
                 local part = player.Character[aimbot_aim_part]
@@ -484,7 +484,7 @@ if executor_used == "Synapse Z" then
 
     local function loop_behind(target_player)
         teleporting = true
-        local player = game.Players.LocalPlayer
+        local player = players_service.LocalPlayer
     
         while teleporting do
             local target_character = target_player.Character
@@ -512,8 +512,8 @@ if executor_used == "Synapse Z" then
     function noclip()
         Clip = false
         local function Nocl()
-            if Clip == false and game.Players.LocalPlayer.Character ~= nil then
-                for _,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if Clip == false and players_service.LocalPlayer.Character ~= nil then
+                for _,v in pairs(players_service.LocalPlayer.Character:GetDescendants()) do
                     if v:IsA('BasePart') and v.CanCollide and v.Name ~= floatName then
                         v.CanCollide = false
                     end
@@ -772,7 +772,7 @@ if executor_used == "Synapse Z" then
                     local matching_player = nil
 
                     -- matching name from input
-                    for _, player in ipairs(game.Players:GetPlayers()) do
+                    for _, player in ipairs(players_service:GetPlayers()) do
                         local player_name = player.Name and player.Name or ""
                         local player_display_name = player.DisplayName and player.DisplayName or ""
 
@@ -828,7 +828,7 @@ if executor_used == "Synapse Z" then
                 speed_modifier_enabled = value
                 if speed_modifier_enabled then
                     repeat
-                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + game.Players.LocalPlayer.Character.Humanoid.MoveDirection * speed_multiplier
+                        players_service.LocalPlayer.Character.HumanoidRootPart.CFrame = players_service.LocalPlayer.Character.HumanoidRootPart.CFrame + players_service.LocalPlayer.Character.Humanoid.MoveDirection * speed_multiplier
                         game:GetService("RunService").Stepped:wait()
                     until not speed_modifier_enabled
                 end
