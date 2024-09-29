@@ -1,5 +1,3 @@
-# patched atm will fix when synz auth is up
-
 # Disrupt
 
 ## The #1 Open Source Rivals Aim Assist
