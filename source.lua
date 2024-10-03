@@ -297,7 +297,7 @@ if executor_used == "Synapse Z" then
 
     -- aimbot shit
     function aimbot()
-        if not aimbot_enabled then
+        if not aimbot_enabled or not aimbot_keybind then
             return
         end
 
@@ -432,7 +432,14 @@ if executor_used == "Synapse Z" then
 
     run_service.RenderStepped:Connect(update_fov_circle)
 
+    -- janky but works
+    function string_to_enum(string)
+        local newstring = string:gsub("Enum.KeyCode.","")
+        return Enum.KeyCode[newstring]
+    end 
+
     local function save_config(path)
+        
         local config = {
             visuals_enabled = visuals_enabled,
             show_boxes_enabled = show_boxes_enabled,
@@ -445,13 +452,14 @@ if executor_used == "Synapse Z" then
             aimbot_aim_part = aimbot_aim_part,
             aimbot_smoothness = aimbot_smoothness,
             show_fov = show_fov,
-            aimbot_keybind = aimbot_keybind,
+            aimbot_keybind = tostring(aimbot_keybind), -- json cant handle enums :/ (thanks gaps)
             aimbot_smoothness_enabled = aimbot_smoothness_enabled,
             aimbot_prediction_enabled = aimbot_prediction_enabled,
             aimbot_prediction_strength_x = aimbot_prediction_strength_x,
             aimbot_prediction_strength_y = aimbot_prediction_strength_y,
             aimbot_sticky_aim_enabled = aimbot_sticky_aim_enabled
         }
+        print("saving..",aimbot_keybind)
         local config_string = game:GetService("HttpService"):JSONEncode(config)
         writefile(path, config_string)
     end
@@ -471,14 +479,14 @@ if executor_used == "Synapse Z" then
             aimbot_aim_part = config.aimbot_aim_part
             aimbot_smoothness = config.aimbot_smoothness
             show_fov = config.show_fov
-            aimbot_keybind = config.aimbot_keybind
+            aimbot_keybind = string_to_enum(config.aimbot_keybind)
             aimbot_smoothness_enabled = config.aimbot_smoothness_enabled
             aimbot_prediction_enabled = config.aimbot_prediction_enabled
             aimbot_prediction_strength_x = config.aimbot_prediction_strength_x
             aimbot_prediction_strength_y = config.aimbot_prediction_strength_y
             aimbot_sticky_aim_enabled = config.aimbot_sticky_aim_enabled
             toggle_visuals(visuals_enabled)
-            toggle_aimbot(aimbot_enabled)
+            --toggle_aimbot(aimbot_enabled) -- useless
         end
     end
 
