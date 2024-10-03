@@ -12,6 +12,9 @@
 
 - **ESP:** See players through walls with boxes, tracers, or names.
 - **Aimbot:** Lets you lock onto a player when you hold right click (this will be customizable in the future) also accepts smoothness for closet cheating.
+- **Player Mods:** Lets you modify multiple things about your character such as walkspeed or noclip.
+- **Teleporting:** Lets you teleport behind a player to loop kill them until you want to stop.
+
 
 ---
 
