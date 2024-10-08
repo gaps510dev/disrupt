@@ -1,3 +1,7 @@
+# Disrupt is currently DETECTED and is UNSAFE to use.
+
+
+
 # Disrupt
 
 ## The #1 Open Source Rivals Aim Assist
